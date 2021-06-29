@@ -1,28 +1,124 @@
+from operator import mul
+from types import ClassMethodDescriptorType
+from typing import Sequence, Optional, Text, Union
+# from __future__ import annotations
 from functional import seq
 
 
-class Caesar():
-    def __init__(self, text: str) -> None:
-        self.text = text
+class Caesar:
+    @classmethod
+    def encode(cls, _text: str, offset: int) -> str:
+        text = seq(iter(_text.lower()))
+        return text\
+            .map(lambda x: ord(x)-97)\
+            .map(lambda x: x + offset % 26)\
+            .map(lambda x: chr(x+97))\
+            .make_string('')
+        '''
+        return seq(iter(text)).map(
+            lambda c: chr((ord(c)-65-offset) % 26+65)
+        ).make_string('')
+        '''
 
-    def encode(self, offset: int) -> str:
-        return seq(list(self.text))\
-            .map(lambda c: chr((ord(c)-65+offset) % 26+65))\
+    @classmethod
+    def decode(cls, _text: str, offset: int) -> str:
+        text = seq(iter(_text.lower()))
+        return text\
+            .map(lambda x: ord(x)-97)\
+            .map(lambda x: x - offset % 26)\
+            .map(lambda x: chr(x+97))\
+            .make_string('')
+        '''
+        return seq(iter(text)).map(
+            lambda c: chr((ord(c)-65-offset) % 26+65)
+        ).make_string('')
+        '''
+
+    @classmethod
+    def shift(cls, text: str, offset: int) -> str:
+        return seq(iter(text))\
+            .map(lambda c: chr((ord(c)+offset)))\
             .make_string('')
 
-    def decode(self, offset: int) -> str:
-        return seq(list(self.text))\
-            .map(lambda c: chr((ord(c)-65-offset) % 26+65))\
+
+class Keyword:
+    alphabet = seq(list('abcdefghijklmnopqrstuvwxyz'))
+
+    @classmethod
+    def encode(cls, _text: str, _keyword: str) -> str:
+        keyword = seq(list(_keyword.lower()))
+        text = seq(iter(_text.lower()))
+
+        table = cls.alphabet\
+            .zip(keyword + cls.alphabet.filter(lambda x: x not in keyword))\
+            .dict()
+        return text.map(lambda x: table[x]).make_string('')
+
+    @classmethod
+    def decode(cls, _text: str, _keyword: str) -> str:
+        keyword = seq(list(_keyword.lower()))
+        text = seq(iter(_text.lower()))
+
+        table = (keyword + cls.alphabet.filter(lambda x: x not in keyword))\
+            .zip(cls.alphabet)\
+            .dict()
+        return text.map(lambda x: table[x]).make_string('')
+
+
+class Affine:
+    @classmethod
+    def encode(cls, _text: str, multi: int, offset: int) -> str:
+        text = seq(iter(_text.lower()))
+        return text\
+            .map(lambda x: ord(x)-97)\
+            .map(lambda x: x*multi+offset)\
+            .map(lambda x: chr(x % 26+97))\
+            .make_string('')
+
+    @classmethod
+    def decode(cls, _text: str, multi: int, offset: int) -> str:
+        text = seq(iter(_text.lower()))
+        table = seq.range(26)\
+            .map(lambda x: (
+                chr(((x*multi+offset) % 26)+97),
+                chr(x+97)
+            )).dict()
+        return text\
+            .map(lambda x: table[x])\
             .make_string('')
 
 
-class Keyword():
-    def __init__(self, text: str) -> None:
-        self.text = text
+class Multiliteral:
+    alphabet = seq(list('abcdefghiklmnopqrstuvwxyz'))
 
-    def encode(self, keyword: str):
-        alphabet = seq(list('abcdefghijklmnopqrstuvwxyz'))
-        table = alphabet.zip(
-            keyword + alphabet.filter(lambda x: x not in keyword)
+    @classmethod
+    def encode(cls, _text: str, _key: str) -> str:
+        key = seq(list(_key))
+        text = seq(iter(_text))
+        table = cls.alphabet.zip(
+            key.cartesian(key).map(lambda x: x[0]+x[1])
         ).dict()
-        return seq(list(self.text)).map(lambda x: table[x]).make_string('')
+        return text.map(lambda x: table[x]).make_string('')
+
+    @classmethod
+    def decode(cls, _text: str, _key: str) -> str:
+        key = seq(list(_key))
+        text = seq(iter(_text))
+        table = key.cartesian(key)\
+            .map(lambda x: x[0]+x[1])\
+            .zip(cls.alphabet)\
+            .dict()
+        return text.grouped(2)\
+            .map(lambda x: table[x[0]+x[1]])\
+            .make_string('')
+
+
+if __name__ == '__main__':
+    assert Caesar.encode('abcdef', 28) == 'cdefgh'
+    assert Caesar.decode('cdefgh', 28) == 'abcdef'
+    assert Keyword.encode('abcdef', 'cfg') == 'cfgabd'
+    assert Keyword.decode('cfgabd', 'cfg') == 'abcdef'
+    assert Affine.encode('abcdef', 7, 12) == 'mtahov'
+    assert Affine.decode('mtahov', 7, 12) == 'abcdef'
+    assert Multiliteral.encode('abcdef', 'btrfs') == 'bbbtbrbfbstb'
+    assert Multiliteral.decode('bbbtbrbfbstb', 'btrfs') == 'abcdef'
