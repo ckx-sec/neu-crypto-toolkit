@@ -1,7 +1,3 @@
-from operator import mul
-from types import ClassMethodDescriptorType
-from typing import Sequence, Optional, Text, Union
-# from __future__ import annotations
 from functional import seq
 
 
@@ -15,9 +11,9 @@ class Caesar:
             .map(lambda x: chr(x+97))\
             .make_string('')
         '''
-        return seq(iter(text)).map(
-            lambda c: chr((ord(c)-65-offset) % 26+65)
-        ).make_string('')
+        return seq(iter(text))\
+            .map(lambda c: chr((ord(c)-65-offset) % 26+65))\
+            .make_string('')
         '''
 
     @classmethod
@@ -29,9 +25,9 @@ class Caesar:
             .map(lambda x: chr(x+97))\
             .make_string('')
         '''
-        return seq(iter(text)).map(
-            lambda c: chr((ord(c)-65-offset) % 26+65)
-        ).make_string('')
+        return seq(iter(text))\
+            .map(lambda c: chr((ord(c)-65-offset) % 26+65))\
+            .make_string('')
         '''
 
     @classmethod
@@ -96,7 +92,7 @@ class Multiliteral:
         key = seq(list(_key))
         text = seq(iter(_text))
         table = cls.alphabet.zip(
-            key.cartesian(key).map(lambda x: x[0]+x[1])
+            key.cartesian(key).smap(lambda x, y: x+y)
         ).dict()
         return text.map(lambda x: table[x]).make_string('')
 
@@ -105,11 +101,11 @@ class Multiliteral:
         key = seq(list(_key))
         text = seq(iter(_text))
         table = key.cartesian(key)\
-            .map(lambda x: x[0]+x[1])\
+            .smap(lambda x, y: x+y)\
             .zip(cls.alphabet)\
             .dict()
         return text.grouped(2)\
-            .map(lambda x: table[x[0]+x[1]])\
+            .smap(lambda x, y: table[x+y])\
             .make_string('')
 
 
