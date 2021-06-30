@@ -4,31 +4,15 @@ from functional import seq
 class Caesar:
     @classmethod
     def encode(cls, _text: str, offset: int) -> str:
-        text = seq(iter(_text.lower()))
-        return text\
-            .map(lambda x: ord(x)-97)\
-            .map(lambda x: x + offset % 26)\
-            .map(lambda x: chr(x+97))\
+        return seq(iter(_text))\
+            .map(lambda c: chr((ord(c)-97+offset) % 26+97))\
             .make_string('')
-        '''
-        return seq(iter(text))\
-            .map(lambda c: chr((ord(c)-65-offset) % 26+65))\
-            .make_string('')
-        '''
 
     @classmethod
     def decode(cls, _text: str, offset: int) -> str:
-        text = seq(iter(_text.lower()))
-        return text\
-            .map(lambda x: ord(x)-97)\
-            .map(lambda x: x - offset % 26)\
-            .map(lambda x: chr(x+97))\
+        return seq(iter(_text))\
+            .map(lambda c: chr((ord(c)-97-offset) % 26+97))\
             .make_string('')
-        '''
-        return seq(iter(text))\
-            .map(lambda c: chr((ord(c)-65-offset) % 26+65))\
-            .make_string('')
-        '''
 
     @classmethod
     def shift(cls, text: str, offset: int) -> str:
