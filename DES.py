@@ -174,12 +174,9 @@ def decrypt_64bits(bin_mess, bin_key):
 
 
 def des_encrypt(message, key):
-    message = bytes(message, encoding="utf8")
-    message = bytes_to_long(message)
-    bin_message = "{0:064b}".format(message)
-    key = bytes(key, encoding="utf8")
-    key = bytes_to_long(key)
-    bin_key = "{0:064b}".format(key)
+    bin_message = "{0:064b}".format(
+        bytes_to_long(bytes(message, encoding="utf8")))
+    bin_key = "{0:064b}".format(bytes_to_long(bytes(key, encoding="utf8")))
     tmp = re.findall(r'.{64}', bin_message)
     res = ""
     for i in tmp:
@@ -189,10 +186,7 @@ def des_encrypt(message, key):
 
 def des_decrypt(message, key):
     bin_message = "{0:064b}".format(int(message))
-    key = bytes(key, encoding="utf8")
-    key = bytes_to_long(key)
-    bin_key = "{0:064b}".format(key)
-
+    bin_key = "{0:064b}".format(bytes_to_long(bytes(key, encoding="utf8")))
     res = ""
     tmp = re.findall(r'.{64}', bin_message)
     for i in tmp:
@@ -209,20 +203,16 @@ def get_mode():
         message = input().replace(' ', '')
         print("请输入你的秘钥：")
         key = input().replace(' ', '')
-        s = des_encrypt(message, key)
-        out_mess = int(s, 2)
+        out_mess = int(des_encrypt(message, key), 2)
         print("密文长整型:")
         print(out_mess)
         write_file(out_mess)
 
     elif mode == '2':
-        # print("请输入信息输入字符串不能为空：")
-        # message = input().replace(' ', '')
         print("请输入你的秘钥：")
         key = input().replace(' ', '')
         message = read_file()
         s = des_decrypt(message, key)
-        #out_mess = bin2str(s)
         print("解密后的信息：" + s)
     else:
         print("请重新输入！")
