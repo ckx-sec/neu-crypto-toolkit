@@ -1,4 +1,8 @@
-def get_inverse_element(value, max_value):
+from __future__ import annotations
+from typing import List, Tuple
+
+
+def _get_inverse_element(value, max_value):
     """
     计算value在1-max_value之间的逆元
     """
@@ -8,17 +12,17 @@ def get_inverse_element(value, max_value):
     return -1
 
 
-def gcd_x_y(x, y):
+def _gcd_x_y(x, y):
     """
     计算最大公约数
     """
     if y == 0:
         return x
     else:
-        return gcd_x_y(y, x % y)
+        return _gcd_x_y(y, x % y)
 
 
-def calculate_p_q(x1, y1, x2, y2, a, p):
+def _calculate_p_q(x1, y1, x2, y2, a, p):
     """
     计算p+q
     """
@@ -35,11 +39,11 @@ def calculate_p_q(x1, y1, x2, y2, a, p):
             denominator = abs(denominator)
 
     # 将分子和分母化为最简
-    gcd_value = gcd_x_y(member, denominator)
+    gcd_value = _gcd_x_y(member, denominator)
     member = int(member / gcd_value)
     denominator = int(denominator / gcd_value)
     # 求分母的逆元
-    inverse_value = get_inverse_element(denominator, p)
+    inverse_value = _get_inverse_element(denominator, p)
     k = (member * inverse_value)
     if flag == 0:
         k = -k
@@ -51,7 +55,7 @@ def calculate_p_q(x1, y1, x2, y2, a, p):
     return [x3, y3]
 
 
-def get_order(x0, y0, a, b, p):
+def _get_order(x0, y0, a, b, p):
     """
     计算椭圆曲线的阶
     """
@@ -63,9 +67,9 @@ def get_order(x0, y0, a, b, p):
     n = 1
     while True:
         n += 1
-        p_value = calculate_p_q(temp_x, temp_y, x0, y0, a, p)
+        p_value = _calculate_p_q(temp_x, temp_y, x0, y0, a, p)
         if p_value[0] == x1 and p_value[1] == y1:
-            print("==========该椭圆曲线的阶为%d=========" % (n+1))
+            # print("==========该椭圆曲线的阶为%d=========" % (n+1))
             return n+1
 
         temp_x = p_value[0]
@@ -74,7 +78,7 @@ def get_order(x0, y0, a, b, p):
     # print("%d-%d-%d-%d" % (x0,y0,x1,y1))
 
 
-def get_x0_y0_x1_y1(x0, a, b, p):
+def _get_x0_y0_x1_y1(x0, a, b, p):
     """
     计算p和-p
     """
@@ -94,7 +98,7 @@ def get_x0_y0_x1_y1(x0, a, b, p):
     return [x0, y0, x1, y1]
 
 
-def draw_graph(a, b, p):
+def _draw_graph(a, b, p):
     """
     输出散列图
     """
@@ -103,7 +107,7 @@ def draw_graph(a, b, p):
         x_y.append(["-" for i in range(p)])
 
     for i in range(p):
-        value = get_x0_y0_x1_y1(i, a, b, p)
+        value = _get_x0_y0_x1_y1(i, a, b, p)
         if value != False:
             x0 = value[0]
             y0 = value[1]
@@ -131,21 +135,21 @@ def draw_graph(a, b, p):
     print()
 
 
-def calculate_np(G_x, G_y, private_key, a, p):
+def _calculate_np(G_x, G_y, private_key, a, p):
     """
     计算nG
     """
     temp_x = G_x
     temp_y = G_y
     while private_key != 1:
-        p_value = calculate_p_q(temp_x, temp_y, G_x, G_y, a, p)
+        p_value = _calculate_p_q(temp_x, temp_y, G_x, G_y, a, p)
         temp_x = p_value[0]
         temp_y = p_value[1]
         private_key -= 1
     return p_value
 
 
-def ecc_encrypt_and_decrypt():
+def _ecc_encrypt_and_decrypt():
     while True:
         a = int(input("请输入椭圆曲线的参数a:"))
         b = int(input("请输入椭圆曲线的参数b:"))
@@ -156,23 +160,23 @@ def ecc_encrypt_and_decrypt():
         else:
             break
     # 输出该椭圆曲线的散点图
-    draw_graph(a, b, p)
+    _draw_graph(a, b, p)
     print("在上图中选出一个点作为生成元G")
     G_x = int(input("你选取的横坐标G_x:"))
     G_y = int(input("你选取的纵坐标G_y:"))
     # 获取该椭圆曲线的阶
-    n = get_order(G_x, G_y, a, b, p)
+    n = _get_order(G_x, G_y, a, b, p)
     # 获取私钥并且key < 椭圆曲线的阶n
     private_key = int(input("输入私钥key(<%d):" % n))
     # 计算公钥 nG
-    Q = calculate_np(G_x, G_y, private_key, a, p)
+    Q = _calculate_np(G_x, G_y, private_key, a, p)
     print("==================生成公钥{a=%d,b=%d,p=%d,阶%d,G(%d,%d),Q(%d,%d)}======" % (
         a, b, p, n, G_x, G_y, Q[0], Q[1]))
 
     # 加密开始
     k = int(input("请给出整数(<%d):" % n))
-    k_G = calculate_np(G_x, G_y, k, a, p)  # 计算kG
-    k_Q = calculate_np(Q[0], Q[1], k, a, p)  # 计算kQ
+    k_G = _calculate_np(G_x, G_y, k, a, p)  # 计算kG
+    k_Q = _calculate_np(Q[0], Q[1], k, a, p)  # 计算kQ
     plain_text = int(input("请输入要加密的明文："))
     cipher_text = plain_text * k_Q[0]  # 计算明文与kQ横坐标的乘积
     # 密文为
@@ -180,12 +184,112 @@ def ecc_encrypt_and_decrypt():
     print("密文为：{(%d,%d),%d}" % (C[0], C[1], C[2]))
     # 解密
     # 计算private_key*kG
-    decrypto_text = calculate_np(C[0], C[1], private_key, a, p)
+    decrypto_text = _calculate_np(C[0], C[1], private_key, a, p)
 
-    inverse_value = get_inverse_element(decrypto_text[0], p)
+    inverse_value = _get_inverse_element(decrypto_text[0], p)
     m = C[2] * inverse_value % p
     print("解密后的明文为%d" % m)
 
 
+def _encrypt(a: int, b: int, p: int):
+    while True:
+        a = int(input("请输入椭圆曲线的参数a:"))
+        b = int(input("请输入椭圆曲线的参数b:"))
+        p = int(input("请输入椭圆曲线的参数p(p为质数):"))
+
+        if (4*(a**3) + 27*(b**2)) % p == 0:
+            print("选取的椭圆曲线不能用于加密，请重新选择\n")
+        else:
+            break
+    # 输出该椭圆曲线的散点图
+    _draw_graph(a, b, p)
+    print("在上图中选出一个点作为生成元G")
+    G_x = int(input("你选取的横坐标G_x:"))
+    G_y = int(input("你选取的纵坐标G_y:"))
+    # 获取该椭圆曲线的阶
+    n = _get_order(G_x, G_y, a, b, p)
+    # 获取私钥并且key < 椭圆曲线的阶n
+    private_key = int(input("输入私钥key(<%d):" % n))
+    # 计算公钥 nG
+    Q = _calculate_np(G_x, G_y, private_key, a, p)
+    print("==================生成公钥{a=%d,b=%d,p=%d,阶%d,G(%d,%d),Q(%d,%d)}======" % (
+        a, b, p, n, G_x, G_y, Q[0], Q[1]))
+
+    # 加密开始
+    k = int(input("请给出整数(<%d):" % n))
+    k_G = _calculate_np(G_x, G_y, k, a, p)  # 计算kG
+    k_Q = _calculate_np(Q[0], Q[1], k, a, p)  # 计算kQ
+    plain_text = int(input("请输入要加密的明文："))
+    cipher_text = plain_text * k_Q[0]  # 计算明文与kQ横坐标的乘积
+    # 密文为
+    C = [k_G[0], k_G[1], cipher_text]
+    print("密文为：{(%d,%d),%d}" % (C[0], C[1], C[2]))
+
+
+class ECC:
+    '''
+    示例:
+    a = ECC(1, 1, 23).choose_G(0).set_private_key(13)\n
+    cipher = a.encrypt(16, 19467382)\n
+    print(cipher)\n
+    print(a.decrypt(cipher))
+    '''
+
+    def __init__(self, a: int, b: int, p: int) -> None:
+        self.a = a
+        self.b = b
+        self.p = p
+        self._draw()
+
+    def _draw(self) -> ECC:
+        '''获得该椭圆曲线的散点图,以便选择生成元'''
+        p = self.p
+        self.matrix: List[Tuple[int, int]] = []
+        for i in range(p):
+            value = _get_x0_y0_x1_y1(i, self.a, self.b, p)
+            if value != False:
+                x0 = value[0]
+                y0 = value[1]
+                x1 = value[2]
+                y1 = value[3]
+                self.matrix.append((x0, y0))
+                self.matrix.append((x1, y1))
+        return self
+
+    def choose_G(self, index: int) -> ECC:
+        '''选择生成元\n
+        index是要选择的点在self.matrix中的索引'''
+        self.G = self.matrix[index]
+        self.n = _get_order(*self.G, self.a, self.b, self.p)  # 阶
+        return self
+
+    def set_private_key(self, key: int):
+        '''key <= self.n'''
+        if key <= self.n:
+            self.private_key = key
+            self.Q = _calculate_np(*self.G, key, self.a, self.p)
+            return self
+
+    def encrypt(self, k: int, plain: int) -> Tuple[int, int, int]:
+        # 加密开始
+        k_G = _calculate_np(*self.G, k, self.a, self.p)  # 计算kG
+        k_Q = _calculate_np(self.Q[0], self.Q[1], k, self.a, self.p)  # 计算kQ
+        cipher_text = plain * k_Q[0]  # 计算明文与kQ横坐标的乘积
+        # 密文为
+        return (k_G[0], k_G[1], cipher_text)
+
+    def decrypt(self, cipher_text: Tuple[int, int, int]) -> int:
+        C = cipher_text
+        decrypto_text = _calculate_np(
+            C[0], C[1], self.private_key, self.a, self.p)
+        inverse_value = _get_inverse_element(decrypto_text[0], self.p)
+        return C[2] * inverse_value % self.p
+
+
 if __name__ == '__main__':
-    ecc_encrypt_and_decrypt()
+    # _draw_graph(1, 1, 23)
+    # _ecc_encrypt_and_decrypt()
+    a = ECC(1, 1, 23).choose_G(0).set_private_key(13)
+    cipher = a.encrypt(16, 19467382)
+    print(cipher)
+    print(a.decrypt(cipher))
