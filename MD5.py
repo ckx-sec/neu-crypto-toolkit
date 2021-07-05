@@ -1,92 +1,122 @@
-import struct
 import math
-import binascii
+
+s = [7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20,
+     4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15,
+     21, ]
 
 
-def _lrot(x, n): return (x << n) | (x >> 32 - n)  # 循环左移的骚操作
+def rearrange(bitString32):
+    if len(bitString32) != 32:
+        raise ValueError("Need length 32")
+    newString = ""
+    for i in [3, 2, 1, 0]:
+        newString += bitString32[8 * i: 8 * i + 8]
+    return newString
 
 
-# 初始向量
-A, B, C, D = (0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476)
-# A, B, C, D = (0x01234567, 0x89ABCDEF, 0xFEDCBA98, 0x76543210)
-
-# 循环左移的位移位数
-r = [7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22,
-     5,  9, 14, 20, 5,  9, 14, 20, 5,  9, 14, 20, 5,  9, 14, 20,
-     4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23,
-     6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21
-     ]
-
-# 使用正弦函数产生的位随机数，也就是书本上的T[i]
-k = [int(math.floor(abs(math.sin(i + 1)) * (2 ** 32))) for i in range(64)]
+def reformatHex(i):
+    hexrep = format(i, "08x")
+    thing = ""
+    for i in [3, 2, 1, 0]:
+        thing += hexrep[2 * i: 2 * i + 2]
+    return thing
 
 
-def _init_mess(message):
-    global A
-    global B
-    global C
-    global D
-    A, B, C, D = (0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476)
-    # A, B, C, D = (0x01234567, 0x89ABCDEF, 0xFEDCBA98, 0x76543210)
-    length = struct.pack('<Q', len(message)*8)  # 原消息长度64位比特的添加格式，太骚额这种写法
-    while len(message) > 64:
-        _solve(message[:64])
-        message = message[64:]
-    # 长度不足64位消息自行填充
-    message += '\x80'
-    message += '\x00' * (56 - len(message) % 64)
-    # print type(length)
-    message += length
-    # print binascii.b2a_hex(message)
-    _solve(message[:64])
+def pad(bitString):
+    startLength = len(bitString)
+    bitString += "1"
+    while len(bitString) % 512 != 448:
+        bitString += "0"
+    lastPart = format(startLength, "064b")
+    #lastPart = "{0:064b}".format(startLength)
+    bitString += rearrange(lastPart[32:]) + rearrange(lastPart[:32])
+    return bitString
 
 
-def _solve(chunk):
-    global A
-    global B
-    global C
-    global D
-    w = list(struct.unpack('<' + 'I' * 16, chunk))  # 分成16个组，I代表1组32位,tql,学到了
-    a, b, c, d = A, B, C, D
+def getBlock(bitString):
 
-    for i in range(64):  # 64轮运算
-        if i < 16:  # 每一轮运算只用到了b,c,d三个
-            f = (b & c) | ((~b) & d)
-            flag = i  # 用于标识处于第几组信息
-        elif i < 32:
-            f = (b & d) | (c & (~d))
-            flag = (5 * i + 1) % 16
-        elif i < 48:
-            f = (b ^ c ^ d)
-            flag = (3 * i + 5) % 16
-        else:
-            f = c ^ (b | (~d))
-            flag = (7 * i) % 16
-        tmp = b + _lrot((a + f + k[i] + w[flag]) &
-                        0xffffffff, r[i])  # &0xffffffff为了类型转换
-        a, b, c, d = d, tmp & 0xffffffff, b, c
-        #print(hex(a).replace("0x","").replace("L",""), hex(b).replace("0x","").replace("L","") , hex(c).replace("0x","").replace("L",""), hex(d).replace("0x","").replace("L",""))
-    A = (A + a) & 0xffffffff
-    B = (B + b) & 0xffffffff
-    C = (C + c) & 0xffffffff
-    D = (D + d) & 0xffffffff
+    currPos = 0
+    while currPos < len(bitString):
+        currPart = bitString[currPos: currPos + 512]
+        mySplits = []
+        for i in range(16):
+            mySplits.append(int(rearrange(currPart[32 * i: 32 * i + 32]), 2))
+        yield mySplits
+        currPos += 512
 
 
-def digest():
-    global A
-    global B
-    global C
-    global D
-    return struct.pack('<IIII', A, B, C, D)
+def not32(i):
+    i_str = format(i, "032b")
+    new_str = ""
+    for c in i_str:
+        new_str += "1" if c == "0" else "0"
+    return int(new_str, 2)
 
 
-def hex_digest():
-    return binascii.hexlify(digest()).decode()
+def sum32(a, b):
+    return (a + b) % 2 ** 32
 
 
-if __name__ == '__main__':
-    while True:
-        mess = input("请输入你的信息:")
-        _init_mess(mess)
-        out_put = hex_digest()
-        print(out_put)
+def leftrot32(i, s):
+    return (i << s) ^ (i >> (32 - s))
+
+
+def md5me(testString):
+    bs = ""
+    for i in testString:
+        bs += format(ord(i), "08b")
+    bs = pad(bs)
+
+    tvals = [int(2 ** 32 * abs(math.sin(i + 1))) for i in range(64)]
+
+    a0 = 0x67452301
+    b0 = 0xEFCDAB89
+    c0 = 0x98BADCFE
+    d0 = 0x10325476
+
+    for m in getBlock(bs):
+        A = a0
+        B = b0
+        C = c0
+        D = d0
+        for i in range(64):
+            if i <= 15:
+                # f = (B & C) | (not32(B) & D)
+                f = D ^ (B & (C ^ D))
+                g = i
+            elif i <= 31:
+                # f = (D & B) | (not32(D) & C)
+                f = C ^ (D & (B ^ C))
+                g = (5 * i + 1) % 16
+            elif i <= 47:
+                f = B ^ C ^ D
+                g = (3 * i + 5) % 16
+            else:
+                f = C ^ (B | not32(D))
+                g = (7 * i) % 16
+            dtemp = D
+            D = C
+            C = B
+            B = sum32(B, leftrot32((A + f + tvals[i] + m[g]) % 2 ** 32, s[i]))
+            A = dtemp
+        a0 = sum32(a0, A)
+        b0 = sum32(b0, B)
+        c0 = sum32(c0, C)
+        d0 = sum32(d0, D)
+
+    digest = reformatHex(a0) + reformatHex(b0) + \
+        reformatHex(c0) + reformatHex(d0)
+    return digest
+
+
+def test():
+    print(md5me("hellowwwwwwwwww"))
+    assert (
+        md5me("The quick brown fox jumps over the lazy dog")
+        == "9e107d9d372bb6826bd81d3542a419d6"
+    )
+    print("Success.")
+
+
+if __name__ == "__main__":
+    test()
