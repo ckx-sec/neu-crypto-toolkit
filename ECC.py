@@ -175,7 +175,7 @@ def ecc_main():
 
     # user2拿到user1的公钥K，Ep(a,b)阶n，加密需要加密的明文数据
     # 加密准备
-    r = int(input("user2：请输入一个整数k（<{}）用于求rG和rK：".format(n)))
+    r = int(input("user2：请输入一个整数r（<{}）用于求rG和rK：".format(n)))
     rG_x, rG_y = get_kG(G_x, G_y, r, a, p)
     rK_x, rK_y = get_kG(K_x, K_y, r, a, p)
 
