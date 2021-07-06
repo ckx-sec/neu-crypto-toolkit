@@ -175,9 +175,9 @@ def ecc_main():
 
     # user2拿到user1的公钥K，Ep(a,b)阶n，加密需要加密的明文数据
     # 加密准备
-    k = int(input("user2：请输入一个整数k（<{}）用于求kG和kQ：".format(n)))
-    kG_x, kG_y = get_kG(G_x, G_y, k, a, p)
-    kQ_x, kQ_y = get_kG(K_x, K_y, k, a, p)
+    r = int(input("user2：请输入一个整数k（<{}）用于求rG和rK：".format(n)))
+    rG_x, rG_y = get_kG(G_x, G_y, r, a, p)
+    rK_x, rK_y = get_kG(K_x, K_y, r, a, p)
 
     # 加密
     plain_text = input("user2：请输入需要加密的字符串:")
@@ -186,9 +186,9 @@ def ecc_main():
     print("密文为：", end="")
     for i in plain_text:
         num = ord(i)
-        cipher_text = num*kQ_x
-        c.append([kG_x, kG_y, cipher_text])
-        print("(({},{}),{})".format(kG_x, kG_y, cipher_text), end=" ")
+        cipher_text = num*rK_x
+        c.append([rG_x, rG_y, cipher_text])
+        print("(({},{}),{})".format(rG_x, rG_y, cipher_text), end=" ")
 
     # user1 知道 kG_x,kG_y，key，求解kQ_x,kQ_y，plain_text = cipher_text/kQ_x
     print("\nuser1解密得到明文：", end="")
