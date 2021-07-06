@@ -1,13 +1,19 @@
+from typing import Union
+
+
 def _init_box(key):
-    s_box = list(range(256)) 
+    s_box = list(range(256))
     j = 0
     for i in range(256):
-        j = (j + s_box[i] + ord(key[i % len(key)])) % 256
+        #j = (j + s_box[i] + ord(key[i % len(key)])) % 256
+        j = (j + s_box[i] + key[i % len(key)]) % 256
         s_box[i], s_box[j] = s_box[j], s_box[i]
     return s_box
 
 
-def encrypt(plain: bytes, key: str) -> bytes:
+def encrypt(plain: bytes, key: Union[str, bytes]) -> bytes:
+    if isinstance(key, str):
+        key = key.encode()
     box = _init_box(key)
     res = bytearray()
     i = j = 0
@@ -21,7 +27,7 @@ def encrypt(plain: bytes, key: str) -> bytes:
     return bytes(res)
 
 
-def decrypt(plain: bytes, key: str) -> bytes:
+def decrypt(plain: bytes, key: Union[str, bytes]) -> bytes:
     return encrypt(plain, key)
 
 

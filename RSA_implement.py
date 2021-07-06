@@ -1,5 +1,6 @@
 import random
 import math
+from typing import Tuple
 from Crypto.Util.number import long_to_bytes, bytes_to_long
 
 
@@ -50,17 +51,41 @@ def inverse(e, phi):
     return u1 % phi
 
 
-message = b"this is message"
-m = bytes_to_long(message)
-p = getPrime(512)
-q = getPrime(512)
-n = p*q
-phi = (p-1)*(q-1)
-e = 65537
-d = inverse(e, phi)
+def encrypt(m: bytes, n: int, e: int = 65537) -> int:
+    '''m:明文 n:公钥 e:参数e'''
+    m = bytes_to_long(m)
+    return pow(m, e, n)
 
-c = pow(m, e, n)
-m_de = pow(c, d, n)
-de = long_to_bytes(m_de)
-print(c)
-print(de)
+
+def decrypt(c: int, d: int, n: int) -> bytes:
+    '''c:密文 d:私钥 n:公钥'''
+    return long_to_bytes(pow(c, d, n))
+
+
+def keygen(e: int = 65537) -> Tuple[int, int]:
+    '''返回(公钥，私钥)'''
+    if not e:
+        e = 65537
+    p = getPrime(128)
+    q = getPrime(128)
+    n = p*q
+    phi = (p-1)*(q-1)
+    d = inverse(e, phi)
+    return (n, d)
+
+
+if __name__ == '__main__':
+    message = b"this is message"
+    m = bytes_to_long(message)  # 明文
+    p = getPrime(512)
+    q = getPrime(512)
+    n = p*q  # 公钥
+    phi = (p-1)*(q-1)
+    e = 65537  # e
+    d = inverse(e, phi)  # 私钥
+
+    c = pow(m, e, n)  # 密文
+    m_de = pow(c, d, n)  # 解密
+    de = long_to_bytes(m_de)
+    print(c)
+    print(de)

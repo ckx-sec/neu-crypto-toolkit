@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>AsymmetricEncryptionWidget</class>
+ <widget class="QWidget" name="AsymmetricEncryptionWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>659</width>
+    <height>526</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QHBoxLayout" name="textsLayout" stretch="1,1">
+     <item>
+      <layout class="QVBoxLayout" name="plainLayout">
+       <item>
+        <widget class="QTabWidget" name="plainTabWidget">
+         <property name="currentIndex">
+          <number>0</number>
+         </property>
+         <widget class="QWidget" name="plainTextTab">
+          <attribute name="title">
+           <string>文本</string>
+          </attribute>
+          <layout class="QHBoxLayout" name="horizontalLayout">
+           <item>
+            <widget class="QTextEdit" name="plainTextEdit">
+             <property name="placeholderText">
+              <string>在此输入明文</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="plainFileTab">
+          <attribute name="title">
+           <string>文件</string>
+          </attribute>
+          <layout class="QVBoxLayout" name="verticalLayout_4">
+           <item>
+            <spacer name="verticalSpacer">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QLabel" name="plainFileLabel">
+             <property name="text">
+              <string>已选文件：asdf.zxcv</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+             <property name="wordWrap">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="plainChooseFileButton">
+             <property name="text">
+              <string>选择明文文件</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="verticalSpacer_2">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="cipherLayout">
+       <item>
+        <widget class="QTabWidget" name="cipherTabWidget">
+         <property name="currentIndex">
+          <number>0</number>
+         </property>
+         <widget class="QWidget" name="cipherTextTab">
+          <attribute name="title">
+           <string>文本</string>
+          </attribute>
+          <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <item>
+            <widget class="QTextEdit" name="cipherTextEdit">
+             <property name="placeholderText">
+              <string>在此输入密文</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="cipherFileTab">
+          <attribute name="title">
+           <string>文件</string>
+          </attribute>
+          <layout class="QVBoxLayout" name="verticalLayout_5">
+           <item>
+            <spacer name="verticalSpacer_3">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QLabel" name="cipherFileLabel">
+             <property name="text">
+              <string>已选文件：zxcv.asdf</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+             <property name="wordWrap">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="cipherChooseFileButton">
+             <property name="text">
+              <string>选择密文文件</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="verticalSpacer_4">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QWidget" name="keyWidget" native="true">
+     <layout class="QHBoxLayout" name="keyLayout">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QLabel" name="keyLabel">
+        <property name="text">
+         <string>密钥</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="keyLineEdit">
+        <property name="placeholderText">
+         <string>在此输入或导入文件</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="keyImportButton">
+        <property name="text">
+         <string>导入...</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QWidget" name="publicKeyWidget" native="true">
+     <layout class="QHBoxLayout" name="publicKeyLayout">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QLabel" name="publicKeyLabel">
+        <property name="text">
+         <string>公钥</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="publicKeyLineEdit">
+        <property name="placeholderText">
+         <string>在此输入或导入文件</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="importPublicKeyButton">
+        <property name="text">
+         <string>导入...</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QWidget" name="privateKeyWidget" native="true">
+     <layout class="QHBoxLayout" name="privateKeyLayout">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QLabel" name="privateKeyLabel">
+        <property name="text">
+         <string>私钥</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="privateKeyLineEdit">
+        <property name="placeholderText">
+         <string>在此输入或导入文件</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="importPrivateKeyButton">
+        <property name="text">
+         <string>导入...</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="bottomLayout">
+     <item>
+      <widget class="QPushButton" name="advancesButton">
+       <property name="text">
+        <string>高级...</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="encryptButton">
+       <property name="text">
+        <string>加密</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="decryptButton">
+       <property name="text">
+        <string>解密</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
