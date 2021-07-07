@@ -274,7 +274,7 @@ def decrypt_64bits(bin_mess, bin_key):
     fin_right = cipher_right
     fin_output = fin_left + fin_right
     bin_plain = ip_re_change(fin_output)
-    res = str(long_to_bytes(int(bin_plain, 2)), encoding="utf-8")
+    res = long_to_bytes(int(bin_plain, 2))
     return res
 
 
@@ -297,7 +297,7 @@ def des_decrypt(message, key):
     if isinstance(key, str):
         key = key.encode()
     bin_key = "{0:064b}".format(bytes_to_long(key))
-    res = ""
+    res = b""
     tmp = re.findall(r'.{64}', bin_message)
     for i in tmp:
         res += decrypt_64bits(i, bin_key)
@@ -339,7 +339,7 @@ def get_mode():
         print("请输入你的密钥：")
         key = input().replace(' ', '')
         message = read_file()
-        s = des_decrypt(message, key)
+        s = des_decrypt(message, key).decode(errors='ignore')
         print("解密后的信息：" + s)
     else:
         print("请重新输入！")
