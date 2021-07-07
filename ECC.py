@@ -1,4 +1,6 @@
 import math
+import random
+from typing import *
 
 
 def get_inverse(fenmu, p):
@@ -90,9 +92,10 @@ def get_param(x0, a, b, p):
     return x0, y0, x1, y1
 
 
-def get_graph(a, b, p):
+def get_graph(a, b, p) -> List[List[int]]:
     """ 
-    输出椭圆曲线散点图 
+    输出椭圆曲线散点图\n
+    返回list[column][row]
     """
     x_y = []
     # 初始化二维数组
@@ -129,6 +132,8 @@ def get_graph(a, b, p):
         else:
             print(i, end="  ")
     print('\n')
+
+    return x_y
 
 
 def get_kG(x, y, privatekey, a, p):
@@ -199,6 +204,30 @@ def ecc_main():
         d.append(i[2]//decrypto_text_x)
         #print(chr(i[2]//decrypto_text_x), end="")
     print(d.decode())
+
+
+def decrypt(text, k, a, p):
+    ret = bytearray()
+    for i in text:
+        decrypto_text_x, decrypto_text_y = get_kG(
+            i[0][0], i[0][1], k, a, p)
+        ret.append(i[1]//decrypto_text_x)
+    return bytes(ret)
+
+
+def encrypt(text, K_x, K_y, G_x, G_y, a, p, n, k):
+    rs = [i for i in range(n)]
+    rs.remove(k)
+    r = random.choice(rs)
+    c = []
+    rG_x, rG_y = get_kG(G_x, G_y, r, a, p)
+    rK_x, rK_y = get_kG(K_x, K_y, r, a, p)
+
+    for i in text:
+        num = i
+        cipher_text = num*rK_x
+        c.append([(rG_x, rG_y), cipher_text])
+    return c
 
 
 if __name__ == "__main__":

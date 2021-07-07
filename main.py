@@ -345,7 +345,7 @@ class DESWidget(ModernCipherWidget):
         super().__init__(parent=parent)
         self.encrypt_func = DES.des_encrypt
         self.encrypt_func = lambda x, y: DES.encrypt_binstr(x, y).encode()
-        self.decrypt_func = lambda x, y: DES.decrypt_binstr(x, y).encode()
+        self.decrypt_func = lambda x, y: DES.decrypt_binstr(x, y)
         #self.decrypt_func = DES.decrypt_binstr
         self.ui.plainTextEdit.setPlaceholderText(
             '在此输入明文（长度小于8的字符串）')
@@ -580,7 +580,7 @@ class ECCWidget(QWidget):
 
         # 加密
         #dest_data: bytes = self.encrypt_func(src_data, keydata)
-        res = str(ECC.encrypt(src_data.decode(), self.K[0], self.K[1], self.gx,
+        res = str(ECC.encrypt(src_data, self.K[0], self.K[1], self.gx,
                               self.gy, self.a, self.p, self.rank, self.k))
 
         # 输出密文
@@ -614,7 +614,7 @@ class ECCWidget(QWidget):
         # 输出明文
         dest_mode = self.ui.plainTabWidget.currentIndex()
         if dest_mode == 0:
-            self.ui.plainTextEdit.setPlainText(dest)
+            self.ui.plainTextEdit.setPlainText(dest.decode())
         elif dest_mode == 1:
             open(self.plain_filename, 'w').write(dest)
 
@@ -683,7 +683,7 @@ class ECCWidget(QWidget):
                     tablestr += f'{table[j][temp]}  '
                 tablestr += '\n'
 
-            tablestr += '  '
+            tablestr += '   '
             for i in range(p):
                 if i >= 10:
                     tablestr += f'{i} '

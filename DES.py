@@ -240,9 +240,9 @@ def gen_key(key):
 
 
 def encrypt_64bits(bin_message, bin_key):  # 64位二进制加密的测试
-    #bin_message = deal_mess(str2bin(message))
+    # bin_message = deal_mess(str2bin(message))
     mes_ip_bin = ip_change(bin_message)
-    #bin_key = input_key_judge(str2bin(key))
+    # bin_key = input_key_judge(str2bin(key))
     key_lst = gen_key(bin_key)
     mes_left = mes_ip_bin[0:32]
     mes_right = mes_ip_bin[32:]
@@ -274,7 +274,7 @@ def decrypt_64bits(bin_mess, bin_key):
     fin_right = cipher_right
     fin_output = fin_left + fin_right
     bin_plain = ip_re_change(fin_output)
-    res = str(long_to_bytes(int(bin_plain, 2)), encoding="utf-8")
+    res = long_to_bytes(int(bin_plain, 2))
     return res
 
 
@@ -292,12 +292,14 @@ def des_encrypt(message: Union[str, bytes], key: Union[str, bytes]) -> str:
     return res
 
 
-def des_decrypt(message, key):
+def des_decrypt(message: str, key: Union[str, bytes]):
     bin_message = "{0:064b}".format(int(message))
+    if isinstance(message, bytes):
+        message = message.decode()
     if isinstance(key, str):
         key = key.encode()
     bin_key = "{0:064b}".format(bytes_to_long(key))
-    res = ""
+    res = b""
     tmp = re.findall(r'.{64}', bin_message)
     for i in tmp:
         res += decrypt_64bits(i, bin_key)
@@ -314,7 +316,7 @@ def decrypt_binstr(text: Union[str, bytes], key: Union[str, bytes]) -> str:
     if isinstance(key, str):
         key = key.encode()
     bin_key = "{0:064b}".format(bytes_to_long(key))
-    res = ""
+    res = b""
     tmp = re.findall(r'.{64}', text)
     for i in tmp:
         res += decrypt_64bits(i, bin_key)
