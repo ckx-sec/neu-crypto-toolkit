@@ -341,7 +341,7 @@ def get_mode():
         print("请输入你的密钥：")
         key = input().replace(' ', '')
         message = read_file()
-        s = des_decrypt(message, key)
+        s = des_decrypt(message, key).decode(errors='ignore')
         print("解密后的信息：" + s)
     else:
         print("请重新输入！")
