@@ -1,6 +1,4 @@
 import math
-from typing import List
-import random
 
 
 def get_inverse(fenmu, p):
@@ -92,10 +90,9 @@ def get_param(x0, a, b, p):
     return x0, y0, x1, y1
 
 
-def get_graph(a, b, p) -> List[List[int]]:
+def get_graph(a, b, p):
     """ 
-    输出椭圆曲线散点图\n
-    返回list[column][row]
+    输出椭圆曲线散点图 
     """
     x_y = []
     # 初始化二维数组
@@ -132,8 +129,6 @@ def get_graph(a, b, p) -> List[List[int]]:
         else:
             print(i, end="  ")
     print('\n')
-
-    return x_y
 
 
 def get_kG(x, y, privatekey, a, p):
@@ -186,45 +181,24 @@ def ecc_main():
 
     # 加密
     plain_text = input("user2：请输入需要加密的字符串:")
-    plain_text = plain_text.strip()
+    plain_text = plain_text.strip().encode()
     c = []
     print("密文为：", end="")
     for i in plain_text:
-        num = ord(i)
+        num = i
         cipher_text = num*rK_x
         c.append([rG_x, rG_y, cipher_text])
         print("(({},{}),{})".format(rG_x, rG_y, cipher_text), end=" ")
 
     # user1 知道 kG_x,kG_y，key，求解kQ_x,kQ_y，plain_text = cipher_text/kQ_x
     print("\nuser1解密得到明文：", end="")
+    d = bytearray()
     for i in c:
         decrypto_text_x, decrypto_text_y = get_kG(
             i[0], i[1], key, a, p)
-        print(chr(i[2]//decrypto_text_x), end="")
-
-
-def decrypt(text, k, a, p):
-    ret = ''
-    for i in text:
-        decrypto_text_x, decrypto_text_y = get_kG(
-            i[0][0], i[0][1], k, a, p)
-        ret += chr(i[1]//decrypto_text_x)
-    return ret
-
-
-def encrypt(text, K_x, K_y, G_x, G_y, a, p, n, k):
-    rs = [i for i in range(n)]
-    rs.remove(k)
-    r = random.choice(rs)
-    c = []
-    rG_x, rG_y = get_kG(G_x, G_y, r, a, p)
-    rK_x, rK_y = get_kG(K_x, K_y, r, a, p)
-
-    for i in text:
-        num = ord(i)
-        cipher_text = num*rK_x
-        c.append([(rG_x, rG_y), cipher_text])
-    return c
+        d.append(i[2]//decrypto_text_x)
+        #print(chr(i[2]//decrypto_text_x), end="")
+    print(d.decode())
 
 
 if __name__ == "__main__":
