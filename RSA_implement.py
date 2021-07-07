@@ -66,8 +66,8 @@ def keygen(e: int = 65537) -> Tuple[int, int]:
     '''返回(公钥，私钥)'''
     if not e:
         e = 65537
-    p = getPrime(128)
-    q = getPrime(128)
+    p = getPrime(256)
+    q = getPrime(256)
     n = p*q
     phi = (p-1)*(q-1)
     d = inverse(e, phi)
